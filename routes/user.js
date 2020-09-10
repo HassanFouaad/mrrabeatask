@@ -147,25 +147,37 @@ const multerUploadMiddleware = makeMulterUploadMiddleware(
   upload.single("avatar")
 );
 
-router.put("/user", auth, multerUploadMiddleware, async (req, res) => {
+router.put("/user", auth, multerUploadMiddleware, userSignUpValidator(),validate, async (req, res) => {
   try {
     const { firstname, lastname, email, username } = req.body;
+
     let user = await User.findByIdAndUpdate(
       req.user._id,
       {
         $set: { firstname, lastname, email, username },
       },
       { new: false }
-    );
+    ).select("-password");
+    if (!user) {
+      return res.status(400).json({ error: "No User Found" });
+    }
+    if (!!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+    if (!firstname || !lastname || !username) {
+      return res
+        .status(400)
+        .json({ error: "Please compelete all profile fields to update" });
+    }
     if (req.file) {
       user.avatar = req.file.path;
     }
     user = _.extend(user, req.body);
-    if (!user) {
-      return res.status(400).json({ error: "No User Found" });
-    }
+
     await user.save();
-    res.status(200).json({ msg: "You have sucessfully updated your profile" });
+    res
+      .status(200)
+      .json({ msg: "You have sucessfully updated your profile", user });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ error: "SERVER ERROR" });
@@ -189,9 +201,9 @@ router.get("/user/:userId", async (req, res) => {
 /* -------------------------- -------------- ------------------------------- */
 
 /* -------------------------- ------Deleting User-------- ------------------------------- */
-router.delete("/user/:userId", () => {
+router.delete("/user/:userId", async (req, res) => {
   try {
-    const user = User.findById(req.params.userId).select("-password");
+    const user = await User.findById(req.params.userId).select("-password");
     if (!user) {
       return res.status(400).json({ error: "No User Found" });
     }
@@ -207,7 +219,7 @@ router.delete("/user/:userId", () => {
 /* -------------------------------Fetching all users--------------------- */
 router.get("/users", async (req, res) => {
   try {
-    const users = User.find({});
+    const users = await User.find({});
     if (!users) {
       return res.status(400).json({ error: "No Users Found" });
     }
