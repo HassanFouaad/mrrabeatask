@@ -21,7 +21,7 @@ router.post("/signup", userSignUpValidator(), validate, async (req, res) => {
     const { firstname, lastname, email, username, password } = req.body;
     console.log(req.body);
     ///See if user exitsts
-    let user = await User.findOne({ email }).select("-password");
+    let user = await User.findOne({ username }).select("-password");
 
     if (user) {
       return res.status(400).json({ error: "User already exists" });
@@ -147,7 +147,6 @@ const multerUploadMiddleware = makeMulterUploadMiddleware(
   upload.single("avatar")
 );
 
-
 router.put("/user", auth, multerUploadMiddleware, async (req, res) => {
   try {
     const { firstname, lastname, email, username } = req.body;
@@ -173,5 +172,60 @@ router.put("/user", auth, multerUploadMiddleware, async (req, res) => {
   }
 });
 
+/* -------------------------- -----Getting User------ ------------------------------- */
+
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select("-password");
+    if (!user) {
+      return res.status(400).json({ error: "No User Found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ error: "SERVER ERROR" });
+  }
+});
 /* -------------------------- -------------- ------------------------------- */
+
+/* -------------------------- ------Deleting User-------- ------------------------------- */
+router.delete("/user/:userId", () => {
+  try {
+    const user = User.findById(req.params.userId).select("-password");
+    if (!user) {
+      return res.status(400).json({ error: "No User Found" });
+    }
+    user.remove();
+    res.status(200).json({ msg: "User has been removed" });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ error: "SERVER ERROR" });
+  }
+});
+/* -------------------------- -------------- ------------------------------------ */
+
+/* -------------------------------Fetching all users--------------------- */
+router.get("/users", async (req, res) => {
+  try {
+    const users = User.find({});
+    if (!users) {
+      return res.status(400).json({ error: "No Users Found" });
+    }
+    res.status(200).json(users);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ error: "SERVER ERROR" });
+  }
+});
+
+//------------------------------- Deleting All users------------------------------///
+router.delete("/users", async (req, res) => {
+  try {
+    await User.remove({});
+    res.status(200).json({ msg: "ALL USERS HAS BEEN DELETED" });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ error: "SERVER ERROR" });
+  }
+});
 module.exports = router;

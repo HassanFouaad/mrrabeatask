@@ -14,7 +14,7 @@ require("./config");
 //App MiddleWares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use("/uploads", express.static(__dirname + "/uploads"));
 app.get("/", express.static(path.join(__dirname, "/public")));
 app.use(morgan("dev"));
 app.use(cors());
@@ -25,3 +25,5 @@ app.use("/api", userRouter);
 app.listen(PORT, () => {
   console.log(`Server is listening on Port: ${PORT}`);
 });
+
+module.exports = app;
