@@ -161,14 +161,14 @@ router.put("/user", auth, multerUploadMiddleware, userSignUpValidator(),validate
     if (!user) {
       return res.status(400).json({ error: "No User Found" });
     }
-    if (!!email) {
+/*     if (!!email) {
       return res.status(400).json({ error: "Email is required" });
     }
     if (!firstname || !lastname || !username) {
       return res
         .status(400)
         .json({ error: "Please compelete all profile fields to update" });
-    }
+    } */
     if (req.file) {
       user.avatar = req.file.path;
     }
@@ -219,7 +219,7 @@ router.delete("/user/:userId", async (req, res) => {
 /* -------------------------------Fetching all users--------------------- */
 router.get("/users", async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select("-password");
     if (!users) {
       return res.status(400).json({ error: "No Users Found" });
     }
