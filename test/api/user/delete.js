@@ -4,7 +4,7 @@ const request = require("supertest");
 const app = require("../../../index.js");
 const conn = require("../../../config/index");
 
-describe("DELETE /api/users", () => {
+/* describe("DELETE /api/users", () => {
   before((done) => {
     conn
       .connect(process.env.DATABASEURL)
@@ -28,10 +28,10 @@ describe("DELETE /api/users", () => {
       })
       .catch((err) => done(err));
   });
-});
+}); */
 
 
-describe("DELETE /api/users/:userId", () => {
+/* describe("DELETE /api/users/:userId", () => {
     before((done) => {
       conn
         .connect(process.env.DATABASEURL)
@@ -56,4 +56,4 @@ describe("DELETE /api/users/:userId", () => {
         .catch((err) => done(err));
     });
   });
-  
+   */

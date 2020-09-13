@@ -10,7 +10,7 @@ const {
 const auth = require("../middlewares/auth");
 const User = require("../models/user");
 const multer = require("multer");
-
+const errorHandler = require("api-error-handler");
 /*-----------------Sign Up API ROUTE------------------*/
 router.post("/signup", userSignUpValidator(), validate, async (req, res) => {
   try {
@@ -176,7 +176,7 @@ router.get("/user/:userId", async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ error: "SERVER ERROR" });
+    return res.status(400).json({ error: "Please Enter valid userId" });
   }
 });
 /* -------------------------- -------------- ------------------------------- */
@@ -184,7 +184,10 @@ router.get("/user/:userId", async (req, res) => {
 /* -------------------------- ------Deleting User-------- ------------------------------- */
 router.delete("/user/:userId", async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).select("-password");
+    if(!req.params.userId){
+      return res.status(400).json({ error: "Please Enter valid Id" });
+    }
+    const user = await User.findOne({_id:req.params.userId}).select("-password");
     if (!user) {
       return res.status(400).json({ error: "No User Found" });
     }
@@ -221,4 +224,5 @@ router.delete("/users", async (req, res) => {
     return res.status(500).json({ error: "SERVER ERROR" });
   }
 });
+router.use(errorHandler());
 module.exports = router;

@@ -4,7 +4,7 @@ const request = require("supertest");
 const app = require("../../../index.js");
 const conn = require("../../../config/index");
 
-describe("GET /api/user/5f59b8a53c49793bb4cc4a7c", () => {
+describe("GET /api/user/5f5dc6ef3c7c6f4730794298", () => {
   before((done) => {
     conn
       .connect(process.env.DATABASEURL)
@@ -20,7 +20,7 @@ describe("GET /api/user/5f59b8a53c49793bb4cc4a7c", () => {
 
   it("OK, Fetching User", (done) => {
     request(app)
-      .get("/api/user/5f59b8a53c49793bb4cc4a7c")
+      .get("/api/user/5f5dc6ef3c7c6f4730794298")
       .then((res) => {
         const body = res.body;
         expect(body).to.contain.property("firstname");

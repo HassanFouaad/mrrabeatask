@@ -38,11 +38,6 @@ describe("POST /api/signup", () => {
   });
 });
 
-const expect = require("chai").expect;
-const request = require("supertest");
-
-const app = require("../../../index.js");
-const conn = require("../../../config/index");
 
 describe("POST /api/signin", () => {
   before((done) => {
@@ -57,8 +52,7 @@ describe("POST /api/signin", () => {
       .then(() => done())
       .catch((err) => done(err));
   });
-
-  it("OK, Signing up", (done) => {
+  it("OK, Signing In", (done) => {
     request(app)
       .post("/api/signin")
       .send({
