@@ -7,12 +7,8 @@ const {
   validate,
   userSigninValidator,
 } = require("../validate/auth");
-const path = require("path");
 const auth = require("../middlewares/auth");
 const User = require("../models/user");
-const formidable = require("formidable");
-const fs = require("fs");
-const _ = require("lodash");
 const multer = require("multer");
 
 /*-----------------Sign Up API ROUTE------------------*/
@@ -156,10 +152,12 @@ router.put("/user", auth, multerUploadMiddleware, async (req, res) => {
     if (req.file) {
       user.avatar = req.file.path;
     }
-    await user.update(req.body, { runValidators: true, context: "query" });
-    res
-      .status(200)
-      .json({ msg: "You have sucessfully updated your profile"});
+    await user.updateOne(req.body, {
+      runValidators: true,
+      context: "query",
+      returnOriginal: false,
+    });
+    res.status(200).json({ msg: "You have sucessfully updated your profile" });
   } catch (error) {
     console.log(error.message);
     const err = Object.entries(error.errors);
