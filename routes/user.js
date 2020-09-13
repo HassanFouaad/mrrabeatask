@@ -147,40 +147,23 @@ const multerUploadMiddleware = makeMulterUploadMiddleware(
   upload.single("avatar")
 );
 
-router.put("/user", auth, multerUploadMiddleware, userSignUpValidator(),validate, async (req, res) => {
+router.put("/user", auth, multerUploadMiddleware, async (req, res) => {
   try {
-    const { firstname, lastname, email, username } = req.body;
-
-    let user = await User.findByIdAndUpdate(
-      req.user._id,
-      {
-        $set: { firstname, lastname, email, username },
-      },
-      { new: false }
-    ).select("-password");
+    let user = await User.findById(req.user._id).select("-password");
     if (!user) {
       return res.status(400).json({ error: "No User Found" });
     }
-/*     if (!!email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
-    if (!firstname || !lastname || !username) {
-      return res
-        .status(400)
-        .json({ error: "Please compelete all profile fields to update" });
-    } */
     if (req.file) {
       user.avatar = req.file.path;
     }
-    user = _.extend(user, req.body);
-
-    await user.save();
+    await user.update(req.body, { runValidators: true, context: "query" });
     res
       .status(200)
-      .json({ msg: "You have sucessfully updated your profile", user });
+      .json({ msg: "You have sucessfully updated your profile"});
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ error: "SERVER ERROR" });
+    const err = Object.entries(error.errors);
+    res.status(500).json({ error: Object.assign({}, err[0])[1].message });
   }
 });
 

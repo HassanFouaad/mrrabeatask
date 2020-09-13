@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const uniqueValidator = require("mongoose-unique-validator");
+const { isEmail, isEmpty } = require("validator");
+mongoose.Promise = global.Promise;
 const userSchema = new Schema(
   {
     username: {
       type: String,
+      required: true,
       unique: true,
       trim: true,
     },
@@ -12,6 +15,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      validate: {
+        validator: (value) => isEmail(value),
+        message: "invalid email address",
+      },
     },
     password: {
       type: String,
@@ -32,5 +39,5 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-
+userSchema.plugin(uniqueValidator);
 module.exports = User = mongoose.model("user", userSchema);
