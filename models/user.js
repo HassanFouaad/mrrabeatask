@@ -17,7 +17,7 @@ const userSchema = new Schema(
       trim: true,
       validate: {
         validator: (value) => isEmail(value),
-        message: "invalid email address",
+        message: "Invalid Email Address",
       },
     },
     password: {
